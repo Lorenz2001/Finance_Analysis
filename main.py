@@ -1,7 +1,9 @@
 import yfinance as yf
 import polars as pl
+import plotly.graph_objects as go
 import warnings
 import logging 
+from pandas import read_html
 
 logging.basicConfig(filename='app.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s')
@@ -20,12 +22,12 @@ def get_tickers(option = "default", sectors = []):
     Returns:
         list: List of all the tickers of the stocks.
     """
-    if option == "default":    
+    if option == "ww":    
         return yf.Tickers().tickers
-    elif option == "wiki":
+    elif option == "default":
         # Download the list of S&P 500 companies from Wikipedia
         url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-        table = pd.read_html(url)[0]  # Read the first table from the page
+        table = read_html(url)[0]  # Read the first table from the page
         tickers = table["Symbol"].tolist()  # Extract the tickers
         return tickers
     elif option == "sectors":
@@ -96,17 +98,38 @@ def get_stock_data(ticker, period = "1d"):
     Volume: The number of shares traded during the time period.
     
     """
+    if ticker not in get_tickers():
+        logging.error(f'Ticker {ticker} not found. Please provide a valid ticker.')
+        raise ValueError("Ticker not found. Please provide a valid ticker.")
+    
     
     stock = yf.Ticker(ticker)
     data = stock.history(period= period)
     logging.info(f'data of {ticker} for {period} is fetched')
     return data
 
+def show_stock_data(data):
+    """
+    Given the stock data, display the stock data in a simple Candlestick
+    Parameters:
+        data: DataFrame
+            stock data
 
+    Returns:
+        None
+    """
+    fig = go.Figure(data=[go.Candlestick(x=data.index,
+                open=data['Open'],
+                high=data['High'],
+                low=data['Low'],
+                close=data['Close'])])
+    fig.update_layout(xaxis_rangeslider_visible=False)
+    fig.show()
 
 
 if __name__ == "__main__":
-
+    print(get_tickers())
     # Get the data for the stock AAPL
-    data = get_stock_data("AAPL", "max")
+    data = get_stock_data("AAPL", "1y")
     print(data)
+    show_stock_data(data)
