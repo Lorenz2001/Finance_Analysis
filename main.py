@@ -105,7 +105,6 @@ def get_stock_data(ticker, period = "1d"):
 
 
 
-
 if __name__ == "__main__":
 
     # Get the data for the stock AAPL
