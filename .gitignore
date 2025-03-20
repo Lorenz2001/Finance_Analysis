@@ -1,0 +1,40 @@
+# Virtual environment
+venv/
+.env/
+*.env
+finance/
+
+# Byte-compiled / cached files
+__pycache__/
+*.py[cod]
+
+# Log files
+*.log
+logs/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.iml
+
+# Dependency files
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Coverage reports
+.coverage
+htmlcov/
+*.cover
