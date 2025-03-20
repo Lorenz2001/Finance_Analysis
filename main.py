@@ -4,6 +4,8 @@ import plotly.graph_objects as go
 import warnings
 import logging 
 from pandas import read_html
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 logging.basicConfig(filename='app.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s')
@@ -49,7 +51,7 @@ def get_tickers(option = "default", sectors = []):
 
 
 
-def get_stock_data(ticker, period = "1d"):
+def download_stock_data(ticker, period = "1d"):
     """
     Given a stock ticker, return the stock data for the given period.
     Args:
@@ -126,10 +128,27 @@ def show_stock_data(data):
     fig.update_layout(xaxis_rangeslider_visible=False)
     fig.show()
 
+def get_stock_data(tickers = [], period = "1y"):
+    if len(tickers) == 0:
+        warnings.warn("Please provide the tickers. The list passed in get_global() is empty.")
+        logging.warning("The list passed in get_global() is empty.")
+        return
+    data = []
+    for ticker in tickers:
+        data.append(download_stock_data(ticker, period))
+    return data
+
+def main():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    tickers = ["AAPL", "MSFT", "GOOGL", "AMZN"]
+    period = "1y"
+    
+    data = get_stock_data(tickers, period)
+    pairplot = sns.pairplot(data[0])
+    plt.show()
+    
+
 
 if __name__ == "__main__":
-    print(get_tickers())
-    # Get the data for the stock AAPL
-    data = get_stock_data("AAPL", "1y")
-    print(data)
-    show_stock_data(data)
+    main()
